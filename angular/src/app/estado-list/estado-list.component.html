@@ -1,0 +1,62 @@
+<p-toast></p-toast>
+<p-confirmDialog header="Atenção" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+<div class="card">
+    <p-toolbar>
+        <div class="p-toolbar-group-left">
+            <button pButton pRipple type="button" icon="pi pi-plus" iconPos="left" label="Cadastrar" class="p-button-sm p-button-rounded p-button-success" (click)="abrirDialogo()"></button>
+            <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-sm p-button-rounded p-button-danger" [disabled]="!selecionados || !selecionados.length" (click)="excluirEstadosSelecionados()"></button>
+        </div>
+        <div class="p-toolbar-group-right">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input  #buscaEstado pInputText type="text" (input)="dt.filterGlobal(buscaEstado.value, 'contains')" placeholder="Buscar">
+            </span>
+        </div>
+    </p-toolbar>
+    
+    <p-table #dt [value]="estados" [rows]="5" [paginator]="true" [(selection)]="selecionados" [globalFilterFields]="['nome']"
+     currentPageReportTemplate="Exibindo de {first} a {last} do total de {totalRecords} estados" [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <h5>Lista de Estados</h5>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                <th>Nome</th>
+                <th>Sigla</th>
+                <th>Ações</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-estado>
+            <tr>
+                <td><p-tableCheckbox [value]="estado"></p-tableCheckbox></td>
+                <td>{{estado.nome}}</td>
+                <td>{{estado.sigla}}</td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success" (click)="editarEstado(estado)"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirEstado(estado)"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <p-dialog [(visible)]="estadoDialog" header="Estado" [modal]="true" styleClass="p-fluid">
+        <ng-template pTemplate="content">
+            <div class="p-field">
+                <label for="nome">Nome</label>
+                <input type="text" pInputText id="nome" [(ngModel)]="estado.nome" name="nome" required>
+                <small class="p-error" *ngIf="enviado && !estado.nome">Informe um nome</small>
+            </div>
+            <div class="p-field">
+                <label for="sigla">Sigla</label>
+                <input type="text" pInputText id="sigla" [(ngModel)]="estado.sigla" name="sigla" required>
+                <small class="p-error" *ngIf="enviado && !estado.sigla">Informe uma sigla</small>
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="fecharDialogo()"></button>
+            <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text" (click)="salvarEstado()"></button>
+        </ng-template>
+    </p-dialog>
+</div>

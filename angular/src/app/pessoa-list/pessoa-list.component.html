@@ -1,0 +1,70 @@
+<p-toast></p-toast>
+<p-confirmDialog header="Atenção" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+<div class="card">
+    <p-toolbar>
+        <div class="p-toolbar-group-left">
+            <button pButton pRipple type="button" icon="pi pi-plus" iconPos="left" label="Cadastrar" class="p-button-sm p-button-rounded p-button-success" (click)="abrirDialogo()"></button>
+            <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-sm p-button-rounded p-button-danger" [disabled]="!selecionados || !selecionados.length" (click)="excluirPessoasSelecionadas()"></button>
+        </div>
+        <div class="p-toolbar-group-right">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input  #buscaPessoa pInputText type="text" (input)="dt.filterGlobal(buscaPessoa.value, 'contains')" placeholder="Buscar">
+            </span>
+        </div>
+    </p-toolbar>
+
+        <p-table #dt [value]="pessoas" [rows]="5" [paginator]="true" [(selection)]="selecionados" [globalFilterFields]="['nome']"
+        currentPageReportTemplate="Exibindo de {first} a {last} do total de {totalRecords} pessoas" [showCurrentPageReport]="true">
+            <ng-template pTemplate="caption">
+                <h5>Lista de Pessoas</h5>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Reside em</th>
+                    <th>Ações</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-pessoa>
+                <tr>
+                    <td><p-tableCheckbox [value]="pessoa"></p-tableCheckbox></td>
+                    <td>{{pessoa.nome}}</td>
+                    <td>{{pessoa.cpf}}</td>
+                    <td>{{pessoa.cidade.nome}} - {{pessoa.cidade.estado.sigla}}</td>
+                    <td>
+                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success" (click)="editarPessoa(pessoa)"></button>
+                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirPessoa(pessoa)"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+        <p-dialog [(visible)]="pessoaDialog" header="Pessoa" [modal]="true" styleClass="p-fluid">
+            <ng-template pTemplate="content">
+                <div class="p-field">
+                    <label for="nome">Nome</label>
+                    <input type="text" pInputText id="nome" [(ngModel)]="pessoa.nome" name="nome" required/>
+                    <small class="p-error" *ngIf="enviado && !pessoa.nome">Informe um nome</small>
+                </div>
+                <div class="p-field">
+                    <label for="cpf">CPF</label>
+                    <p-inputMask  mask="999.999.999-99" id="cpf" [(ngModel)]="pessoa.cpf" name="cpf" [required]="true"></p-inputMask>
+                    <small class="p-error" *ngIf="enviado && !pessoa.cpf">Informe um CPF</small>
+                </div>
+                <div class="p-field">
+                    <label for="cidade">Reside em</label>
+                    <p-dropdown appendTo="body" [options]="cidades" [(ngModel)]="pessoa.cidade" optionLabel="nome" placeholder="Selecionar" [required]="true"></p-dropdown>
+                    <small class="p-error" *ngIf="enviado && !pessoa.cidade">Selecione uma cidade</small>
+                </div>
+                
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="fecharDialogo()"></button>
+                <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text" (click)="salvarPessoa()"></button>
+            </ng-template>
+        </p-dialog>
+</div>
